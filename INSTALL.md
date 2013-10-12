@@ -25,3 +25,4 @@ To configure the WordPress plugin
 
 The setup should be complete.   You can enable Debug Logging temporarily to monitor what the plugin is doing.   Test by enabling debug logging and adding a new post.
 
+
