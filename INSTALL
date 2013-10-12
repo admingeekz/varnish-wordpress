@@ -1,5 +1,6 @@
 To install the WordPress plugin.
 
+- Get the latest version from https://www.admingeekz.com/files/varnish-wordpress.tar.gz
 - Copy the varnish-wordpress folder to wp-content/plugins/
 - Login to wp-admin
 - Go to "Plugins"->"Add New" on the left menu
