@@ -40,7 +40,7 @@ Our tests show that by utilizing varnish you gain a ~70x capacity increase over 
 
 = To install the WordPress plugin. =
 
-1. Get the latest version from https://www.admingeekz.com/files/varnish-wordpress.tar.gz
+1. Get the latest version from https://www.admingeekz.com/files/varnish-wordpress.zip
 2. Copy the varnish-wordpress folder to wp-content/plugins/
 3. Login to wp-admin
 4. Go to Plugins->Installed Plugins on the left menu
