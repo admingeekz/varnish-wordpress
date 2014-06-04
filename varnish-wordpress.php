@@ -2,7 +2,7 @@
 /*
 Plugin Name:	Varnish WordPress
 Description:	This plugin provides the ability to intergrate varnish with wordpress.
-Version:		1.3
+Version:		1.5
 Author:			AdminGeekZ
 Author URI:		http://www.admingeekz.com
 License: 	Copyright 2013  AdminGeekZ Ltd (pr@admingeekz.com)
@@ -24,7 +24,7 @@ License: 	Copyright 2013  AdminGeekZ Ltd (pr@admingeekz.com)
 class VarnishWordPress {
 
 	public $settings=array(
-				'varnishwp_version' => 1.4,
+				'varnishwp_version' => 1.5,
 				'varnishwp_enabled' => 0,
                                 'varnishwp_backends' => '127.0.0.1:6081',
                                 'varnishwp_timeout' => 30,

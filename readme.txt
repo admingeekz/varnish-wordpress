@@ -2,8 +2,8 @@
 Contributors: admingeekz
 Tags: Varnish WordPress,  WordPress Varnish,  Varnish Cache,  WordPress Cache,  High Performance WordPress,  Cache WordPress,  Fast WordPress
 Requires at least: 3.4
-Tested up to: 3.6.1
-Stable tag: 1.4
+Tested up to: 3.9.1
+Stable tag: 1.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -74,6 +74,13 @@ Check the latest FAQ at the plugin home page on our website at <a href="http://w
 2. Screenshot of the WordPress plugin.
 
 == Changelog ==
+
+= 1.5 =
+* Introduce support for separate wp-admin backend to allow for longer timeouts
+* Add comments/support to default varnish config for multiple domains/subdomains and SSL
+* Bugfix: the timeout for backends was not processed so defaulted to 0 seconds
+* Bugfix: typo in the error reporting when unable to connect to a backend
+* Bugfix: default styling for checkboxes was malformed in certain themes
 
 = 1.4 =
 * Updating readme, screenshots and installation documents to package and list as a plugin in the WordPress directory
