@@ -1,7 +1,7 @@
 # Varnish configuration for wordpress
 # AdminGeekZ Ltd <sales@admingeekz.com>
 # URL: www.admingeekz.com/varnish-wordpress
-#
+# Version: 1.4
 
 #Configure the backend webserver
 backend default {
@@ -14,6 +14,13 @@ acl purge {
   "127.0.0.1";
 }
 
+# Have separate backend for wp-admin for longer timesouts
+backend wpadmin {
+  .host = "127.0.0.1";
+  .port = "81";
+  .first_byte_timeout = 500000s;
+  .between_bytes_timeout = 500000s;
+}
 
 sub vcl_recv {
   if (req.request == "BAN") {
@@ -51,6 +58,11 @@ sub vcl_recv {
   #Don't cache ajax requests, urls with ?nocache or comments/login/regiser
   if(req.http.X-Requested-With == "XMLHttpRequest" || req.url ~ "nocache" || req.url ~ "(control.php|wp-comments-post.php|wp-login.php|register.php)") {
     return (pass);
+  }
+
+  #Set backend to wpadmin backend for longer timeouts
+  if (req.url ~ "/wp-admin") {
+     set req.backend = wpadmin;
   }
 
   #Serve stale cache objects for up to 2 minutes if the backend is down
