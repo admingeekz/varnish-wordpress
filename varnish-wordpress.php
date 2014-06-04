@@ -2,7 +2,7 @@
 /*
 Plugin Name:	Varnish WordPress
 Description:	This plugin provides the ability to intergrate varnish with wordpress.
-Version:		1.3
+Version:		1.5
 Author:			AdminGeekZ
 Author URI:		http://www.admingeekz.com
 License: 	Copyright 2013  AdminGeekZ Ltd (pr@admingeekz.com)
@@ -24,7 +24,7 @@ License: 	Copyright 2013  AdminGeekZ Ltd (pr@admingeekz.com)
 class VarnishWordPress {
 
 	public $settings=array(
-				'varnishwp_version' => 1.4,
+				'varnishwp_version' => 1.5,
 				'varnishwp_enabled' => 0,
                                 'varnishwp_backends' => '127.0.0.1:6081',
                                 'varnishwp_timeout' => 30,
@@ -153,9 +153,9 @@ class VarnishWordPress {
 			foreach(preg_split("/((\r?\n)|(\r\n?))/",$this->settings["varnishwp_backends"]) as $backend) {
 				$backend=explode(":", $backend);
 				$this->varnishwp_log("Processing ${backend[0]}:${backend[1]} ");
-				$fp = @fsockopen($backend[0], $backend[1], $errno,  $errstr, $this->varnishwp_timeout);
+				$fp = @fsockopen($backend[0], $backend[1], $errno,  $errstr, $this->settings["varnishwp_timeout"]);
 				if (!$fp) {
-					$this->varnishwp_log("Error connecting to ${backend[0]}:${port[1]} : ${errstr} (${errno})");
+					$this->varnishwp_log("Error connecting to ${backend[0]}:${backend[1]} : ${errstr} (${errno})");
 				}
 				else {
 					$out = "BAN ${url}\r\n";
@@ -378,26 +378,26 @@ $success</p>
         </tr>
         <tr>
                 <th><label for="enabled">Enabled</label></th>
-                <td><input name="varnishwp_enabled" id="varnishwp_enabled" type="checkbox" value="1" $enabledvalue class="regular-text code" /></td>
+                <td><input name="varnishwp_enabled" id="varnishwp_enabled" type="checkbox" value="1" $enabledvalue /></td>
         </tr>
         <tr>
                 <th><label for="timeout">Debug Logging</label>
                     <p><em>This will log all the PURGE requests we make to varnish.  Default off.</em></p>
                 </th>
-                <td><input name="varnishwp_logging" id="varnishwp_logging" type="checkbox" value="1" $loggingvalue class="regular-text code" /></td>
+                <td><input name="varnishwp_logging" id="varnishwp_logging" type="checkbox" value="1" $loggingvalue /></td>
         </tr>
         <tr>
                 <th><label for="disablefeeds">Disable Feed Purging</label>
                     <p><em>This will disable purging for the RSS, Atom and Comment feeds. Default off</em></p>
                 </th>
-                <td><input name="varnishwp_disablefeeds" id="varnishwp_disablefeeds" type="checkbox" value="1" $disablefeedsvalue class="regular-text code" /></td>
+                <td><input name="varnishwp_disablefeeds" id="varnishwp_disablefeeds" type="checkbox" value="1" $disablefeedsvalue /></td>
         </tr>
 
         <tr>
                 <th><label for="purgeall">Purge All on changes</label>
                     <p><em>This will purge your entire cache instead of individual URL's when changes are detected. This is <strong>not</strong> recommended and could have performance impacts for large installations.</em></p>
                 </th>
-                <td><input name="varnishwp_purgeall" id="varnishwp_purgeall" type="checkbox" value="1" $purgeallvalue class="regular-text code" /></td>
+                <td><input name="varnishwp_purgeall" id="varnishwp_purgeall" type="checkbox" value="1" $purgeallvalue /></td>
         </tr>
         <tr>
                 <th><label for="save">Save Configuration</label></th>

@@ -1,13 +1,22 @@
 # Varnish configuration for wordpress
 # AdminGeekZ Ltd <sales@admingeekz.com>
 # URL: www.admingeekz.com/varnish-wordpress
-#
+# Version: 1.5
 
 #Configure the backend webserver
 backend default {
   .host = "127.0.0.1";
   .port = "80";
 }
+
+# Have separate backend for wp-admin for longer timesouts
+backend wpadmin {
+  .host = "127.0.0.1";
+  .port = "81";
+  .first_byte_timeout = 500000s;
+  .between_bytes_timeout = 500000s;
+}
+
 
 #Which hosts are allowed to PURGE the cache
 acl purge {
@@ -53,6 +62,11 @@ sub vcl_recv {
     return (pass);
   }
 
+  #Set backend to wpadmin backend for longer timeouts
+  if (req.url ~ "/wp-admin") {
+     set req.backend = wpadmin;
+  }
+
   #Serve stale cache objects for up to 2 minutes if the backend is down
   set req.grace = 120s;
 
@@ -83,6 +97,12 @@ sub vcl_fetch {
 }
 
 sub vcl_hash {
+  
+  #Uncomment if you use multiple domains/subdomains and want to maintain separate caches
+  #hash_data(req.http.host);
+  #Uncomment if you use SSL and want to maintain separate caches
+  #hash_data(req.http.X-Forwarded-Port);
+
   #Set the hash to include the cookie if it exists, to maintain per user cache
   if ( req.http.Cookie ~"(wp-postpass|wordpress_logged_in|comment_author_)" ) {
     hash_data(req.http.Cookie);
