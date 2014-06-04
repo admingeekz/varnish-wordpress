@@ -155,7 +155,7 @@ class VarnishWordPress {
 				$this->varnishwp_log("Processing ${backend[0]}:${backend[1]} ");
 				$fp = @fsockopen($backend[0], $backend[1], $errno,  $errstr, $this->varnishwp_timeout);
 				if (!$fp) {
-					$this->varnishwp_log("Error connecting to ${backend[0]}:${port[1]} : ${errstr} (${errno})");
+					$this->varnishwp_log("Error connecting to ${backend[0]}:${backend[1]} : ${errstr} (${errno})");
 				}
 				else {
 					$out = "BAN ${url}\r\n";
