@@ -153,7 +153,7 @@ class VarnishWordPress {
 			foreach(preg_split("/((\r?\n)|(\r\n?))/",$this->settings["varnishwp_backends"]) as $backend) {
 				$backend=explode(":", $backend);
 				$this->varnishwp_log("Processing ${backend[0]}:${backend[1]} ");
-				$fp = @fsockopen($backend[0], $backend[1], $errno,  $errstr, $this->varnishwp_timeout);
+				$fp = @fsockopen($backend[0], $backend[1], $errno,  $errstr, $this->settings["varnishwp_timeout"]);
 				if (!$fp) {
 					$this->varnishwp_log("Error connecting to ${backend[0]}:${backend[1]} : ${errstr} (${errno})");
 				}
