@@ -2,9 +2,9 @@
 /*
 Plugin Name:	Varnish WordPress
 Description:	This plugin provides the ability to intergrate varnish with wordpress.
-Version:		1.5
+Version:		1.6
 Author:			AdminGeekZ
-Author URI:		http://www.admingeekz.com
+Author URI:		https://www.admingeekz.com
 License: 	Copyright 2013  AdminGeekZ Ltd (pr@admingeekz.com)
 
     This program is free software; you can redistribute it and/or modify
@@ -24,7 +24,7 @@ License: 	Copyright 2013  AdminGeekZ Ltd (pr@admingeekz.com)
 class VarnishWordPress {
 
 	public $settings=array(
-				'varnishwp_version' => 1.5,
+				'varnishwp_version' => 1.6,
 				'varnishwp_enabled' => 0,
                                 'varnishwp_backends' => '127.0.0.1:6081',
                                 'varnishwp_timeout' => 30,
@@ -36,7 +36,7 @@ class VarnishWordPress {
 
 	public $varnishwp_clear=array();
 	private $varnishwp_host;
-	private $varnishwp_prefix;
+        private $varnishwp_prefix;
 
 	function __construct() {
 		//Likely executing over CLI
@@ -70,7 +70,6 @@ class VarnishWordPress {
 				);
 
 
-
 		foreach ($postactions as $action) {
 			add_action($action, array($this, 'varnishwp_purgepost'), 99);
 			add_action($action, array($this, 'varnishwp_purgecommon'), 99);
@@ -86,8 +85,8 @@ class VarnishWordPress {
 		//Do all purge actions at end for performance reasons
                 add_action('shutdown', array($this, 'varnishwp_shutdown'), 99);
 
-		//Bit hacky,  see if there is a better way
-		$this->varnishwp_setprefix();
+                //Bit hacky,  see if there is a better way
+                $this->varnishwp_setprefix();
 
 		if (is_admin()) 
 			add_action('admin_menu', array($this, 'varnish_admin_menu'));
@@ -124,20 +123,20 @@ class VarnishWordPress {
 		}
 	}
 
+        function varnishwp_setprefix() {
+                $url = get_bloginfo('url');
+                preg_match("/(http|https):\/\/(.*?)(\/|$)/", $url, $matches);
+                $this->varnishwp_host=$matches[2];
+                $matches="";
+                //strip trailing slash
+                if(substr($url, -1) == '/') {
+                        $url = substr($url, 0, -1);
+                }
+                if (preg_match("/(http|https):\/\/.*(\/.*?)(\/|$)/", $url, $matches)) {
+                        $this->varnishwp_prefix=$matches[2];
+                }
+        }
 
-	function varnishwp_setprefix() {
-		$url = get_bloginfo('url');
-		preg_match("/http:\/\/(.*?)(\/|$)/", $url, $matches);
-		$this->varnishwp_host=$matches[1];
-		$matches="";
-		//strip trailing slash
-		if(substr($url, -1) == '/') {
-			$url = substr($url, 0, -1);
-		}
-		if (preg_match("/http:\/\/.*(\/.*?)(\/|$)/", $url, $matches)) {
-			$this->varnishwp_prefix=$matches[1];
-		}
-	}
 
 	function varnishwp_log($log) {
 		if ($this->settings["varnishwp_logging"])
@@ -145,6 +144,10 @@ class VarnishWordPress {
 	}
 
 	function varnishwp_dopurge($urls) {
+		//Don't process if plugin is disabled.
+		if (get_option('varnishwp_enabled') != "1") {
+			return true;
+		}
                 $host=$this->varnishwp_host;
 		//Remove duplicates
 		$urls=array_unique($urls);
@@ -158,7 +161,7 @@ class VarnishWordPress {
 					$this->varnishwp_log("Error connecting to ${backend[0]}:${backend[1]} : ${errstr} (${errno})");
 				}
 				else {
-					$out = "BAN ${url}\r\n";
+					$out = "BAN ${url} HTTP/1.0\r\n";
 					$out .= "Host: ${host}\r\n";
 					$out .= "Connection: Close \r\n\r\n";
 					@fwrite($fp, $out);
@@ -190,7 +193,7 @@ class VarnishWordPress {
 
 	function varnishwp_checkpurge($urls) {
 		if ($this->settings["varnishwp_purgeall"] == "1") {
-			return "";
+			return "/";
 		}
 		return $urls;
 	}
@@ -257,7 +260,7 @@ class VarnishWordPress {
 		$logerror="";
 		$success="";
 		$backenderror="";
-	        if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST['varnishwp_enabled'])) {
+	        if ($_SERVER["REQUEST_METHOD"] == "POST" && !empty($_POST['varnishwp_backends'])) {
                 $varnishwp_enabled=($_POST['varnishwp_enabled'] == "1" ? 1 : 0);
                 $varnishwp_logging=($_POST['varnishwp_logging'] == "1" ? 1 : 0);
                 $varnishwp_disablefeeds=($_POST['varnishwp_disablefeeds'] == "1" ? 1 : 0);
@@ -270,9 +273,19 @@ class VarnishWordPress {
                         $varnishwp_timeout=$this->settings["varnishwp_timeout"];
 		}
 
-                if (($varnishwp_logging && !is_writable($varnishwp_logname))) { 
-                        $logerror="<br /><font color=\"red\"><strong>Unable to write to specified log file name.  Make sure it exists and the webbackend can write to it.</strong></font>";
-                        $varnishwp_logname=$this->settings["varnishwp_logname"];
+                if ($varnishwp_logging) {
+			#Attempt to create the log file if it doesn't exist.
+			if (!file_exists($varnishwp_logname)) {
+				$f = @fopen($varnishwp_logname, 'w');
+				@fwrite($f, "");
+				@fclose(f);
+			}
+			#Make sure we can write to the log
+			if (!is_writable($varnishwp_logname)) { 
+                        	$logerror="<br /><font color=\"red\"><strong>Unable to write to specified log file name. ".$varnishwp_logname." Make sure it exists and the webbackend can write to it.</strong></font>";
+                        	$varnishwp_logname=$this->settings["varnishwp_logname"];
+				$varnishwp_logging=0;
+			}
                 }
 
 
@@ -341,7 +354,7 @@ $purgesuccess
 <table class="form-table">
         <tr>
                 <th><label for="backends">Manual Purge</label>
-                    <p><em>Input the urls you would like to manually purge. One on each line.  Leave blank to purge the entire cache. <br />Full http:// urls are also supported<br /><strong>Example: /^$ will purge the index</strong></em>$purgeerror</p>
+                    <p><em>Input the urls you would like to manually purge. One on each line.  Use / to clear the entire cache. <br />Full http:// urls are also supported<br /><strong>Example: /^$ will purge the index</strong></em>$purgeerror</p>
                 </th>
                 <td><textarea name="varnishwp_manualpurge" id="varnishwp_manualpurge" cols="40" rows="5" class="regular-text code" />$defaultpurgevalue</textarea></td>
         </tr>
@@ -408,8 +421,44 @@ $success</p>
 </form>
 </div>
 EOF;
-}
+	if ($loggingvalue == "checked") {
+		$serverheaders=print_r($_SERVER,true);
+		if (is_readable($varnishwp_logname)) {
+			$lines=array();
+			$f= @fopen($varnishwp_logname, 'r');
+			while (!feof($f)) {
+				$line = fgets($f, 4096);
+				array_push($lines, $line);
+				if (count($lines) > 50) {
+					array_shift($lines);
+				}
+			}
+			@fclose($f);
+		}
 
+		$debuglog=implode("", $lines);
+		echo <<<EOF
+<p>
+<h2><strong>Debugging Information</strong></h2>
+<table class="form-table">
+        <tr>
+            	<th><label for="debuglog">Debug Log</label>
+                    <p><em>Last 50 lines of the debug log.</em></p>
+                </th>
+                <td><textarea name="varnishwp_debuglog" id="varnishwp_debuglog" cols="120" rows="30" class="textarea code" />$debuglog</textarea></td>
+        </tr>
+        <tr>
+               	<th><label for="debuggingheaders">Server Headers</label>
+                    <p><em>Display the server headers,  useful to verify things like SERVER_PORT, X_FORWARDED_PORT,  HTTPS.</em></p>
+               	</th>
+               	<td><textarea name="varnishwp_serverheaders" id="varnishwp_serverheaders" cols="120" rows="30" class="textarea code" />$serverheaders</textarea></td>
+        </tr>
+
+	</table>
+</p>
+EOF;
+	}
+}
 }
 $varnishwordpress = new VarnishWordPress();
 ?>

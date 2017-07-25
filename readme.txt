@@ -2,7 +2,7 @@
 Contributors: admingeekz
 Tags: Varnish WordPress,  WordPress Varnish,  Varnish Cache,  WordPress Cache,  High Performance WordPress,  Cache WordPress,  Fast WordPress
 Requires at least: 3.4
-Tested up to: 3.9.1
+Tested up to: 4.8
 Stable tag: 1.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -30,7 +30,7 @@ At present some of the features are,
 *  Ability to purge entire cache on changes
 *  Debug logging
 *  Minimize number of purges and remove duplicate purges for speed on larger installations
-*  Actively maintained
+*  Supports varnish 4 + 5
 
 = Speed =
 
@@ -74,6 +74,14 @@ Check the latest FAQ at the plugin home page on our website at <a href="http://w
 2. Screenshot of the WordPress plugin.
 
 == Changelog ==
+
+= 1.6 =
+* Added better HTTPS support
+* Added varnish 4 and varnish 5 VCL's
+* Fixed purging of all
+* Fixed enabling/disabling of plugin
+* Added extra debug logging
+* Show last logs and server headers when debug log is enabled
 
 = 1.5 =
 * Introduce support for separate wp-admin backend to allow for longer timeouts
