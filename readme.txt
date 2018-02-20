@@ -2,8 +2,8 @@
 Contributors: admingeekz
 Tags: Varnish WordPress,  WordPress Varnish,  Varnish Cache,  WordPress Cache,  High Performance WordPress,  Cache WordPress,  Fast WordPress
 Requires at least: 3.4
-Tested up to: 4.8
-Stable tag: 1.6
+Tested up to: 4.9
+Stable tag: 1.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -31,7 +31,7 @@ At present some of the features are,
 *  Debug logging
 *  Minimize number of purges and remove duplicate purges for speed on larger installations
 *  Supports varnish 4 + 5
-
+*  Support for Woocommerce
 = Speed =
 
 Our tests show that by utilizing varnish you gain a ~70x capacity increase over standard WordPress making you resistant to traffic floods (slashdot,  digg, reddit,  stumbleupon).
@@ -74,6 +74,10 @@ Check the latest FAQ at the plugin home page on our website at <a href="http://w
 2. Screenshot of the WordPress plugin.
 
 == Changelog ==
+
+= 1.7 = 
+* Verified support with latest wordpress 4.9
+* Added woocommerce support
 
 = 1.6 =
 * Added better HTTPS support

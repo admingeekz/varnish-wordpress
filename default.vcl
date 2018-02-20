@@ -3,7 +3,7 @@ vcl 4.0;
 # Varnish 5 configuration for wordpress
 # AdminGeekZ Ltd <sales@admingeekz.com>
 # URL: www.admingeekz.com/varnish-wordpress
-# Version: 1.6
+# Version: 1.7
 
 #Configure the backend webserver
 backend default {
